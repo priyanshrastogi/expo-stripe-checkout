@@ -55,8 +55,8 @@ router.post('/checkout', async (req, res) => {
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     line_items: order_items,
-    success_url: 'http://192.168.1.4:3000/.netlify/functions/api/payment/success',
-    cancel_url: 'http://192.168.1.4:3000/.netlify/functions/api/payment/cancel',
+    success_url: 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/success',
+    cancel_url: 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/cancel',
     client_reference_id: orderId,
     customer_email: 'email@example.com',
   });
