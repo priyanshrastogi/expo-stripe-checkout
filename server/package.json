@@ -1,0 +1,20 @@
+{
+  "name": "expo-stripe-checkout-api",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "netlify-lambda build functions",
+    "start": "node api"
+  },
+  "author": "Priyansh Rastogi",
+  "license": "ISC",
+  "dependencies": {
+    "aws-serverless-express": "^3.3.6",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongodb": "^3.2.7",
+    "morgan": "^1.9.1",
+    "netlify-lambda": "^1.6.3",
+    "stripe": "^8.48.0"
+  }
+}
