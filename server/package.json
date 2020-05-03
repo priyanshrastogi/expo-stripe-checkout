@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "build": "netlify-lambda build functions",
-    "start": "node api"
+    "start": "node functions/api"
   },
   "author": "Priyansh Rastogi",
   "license": "ISC",
