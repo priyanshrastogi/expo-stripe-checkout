@@ -1,4 +1,4 @@
-import { ADD_TO_CART, REMOVE_FROM_CART } from '../actions';
+import { ADD_TO_CART, REMOVE_FROM_CART, CLEAR_CART } from '../actions';
 
 export default function(state = {}, action) {
   const { payload } = action;
@@ -12,7 +12,6 @@ export default function(state = {}, action) {
       else {
         state[payload._id].quantity = state[payload._id].quantity + 1;
       }
-      //console.log(state);
       return {...state};
 
     case REMOVE_FROM_CART:
@@ -22,8 +21,10 @@ export default function(state = {}, action) {
       else {
         state[payload._id].quantity = state[payload._id].quantity - 1;
       }
-      //console.log(state);
       return {...state};
+
+    case CLEAR_CART:
+      return {};
 
     default:
       return state;

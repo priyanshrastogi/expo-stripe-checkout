@@ -8,6 +8,7 @@ import TabBarIcon from '../components/TabBarIcon';
 import TabBarLabel from '../components/TabBarLabel';
 import Colors from '../constants/Colors';
 import CheckoutWebViewScreen from '../screens/CheckoutWebviewScreen';
+import OrderPlacedScreen from '../screens/OrderPlacedScreen';
 
 const HomeStack = createStackNavigator();
 
@@ -30,6 +31,21 @@ function HomeStackScreen() {
         }}
       />
       <HomeStack.Screen name="ProductDetails" component={ProductDetailsScreen} />
+      <HomeStack.Screen 
+        name="OrderPlaced" 
+        component={OrderPlacedScreen} 
+        options={{
+          title: 'Your Order',
+          headerStyle: {
+            backgroundColor: Colors.primary,
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontFamily: 'lato-bold'
+          },
+          headerTitleAlign: 'center'
+        }}
+      />
     </HomeStack.Navigator>
   );
 }
@@ -50,13 +66,24 @@ function CartStackScreen() {
         headerTitleAlign: 'center'
       }} 
     >
-      <CartStack.Screen name="Cart" tit component={CartScreen} />
-      <CartStack.Screen name="Checkout" component={CheckoutWebViewScreen}/>
+      <CartStack.Screen name="Cart" component={CartScreen} />
+      <CartStack.Screen name="Checkout" options={{headerLeft: null}} component={CheckoutWebViewScreen}/>
     </CartStack.Navigator>
   );
 }
 
 const Tab = createBottomTabNavigator();
+
+function getTabBarVisible(route) {
+  const routeName = route.state
+    ?  route.state.routes[route.state.index].name
+    : route.params?.screen || 'Cart';
+
+  if (routeName === 'Checkout') {
+    return false;
+  }
+  return true;
+}
 
 export default function BottomTabNavigator() {
   return (
@@ -72,10 +99,11 @@ export default function BottomTabNavigator() {
       <Tab.Screen 
         name="CartTab" 
         component={CartStackScreen} 
-        options={{
+        options={({ route }) => ({
           tabBarIcon: ({focused}) => <TabBarIcon focused={focused} name='shopping-cart'/>,
           tabBarLabel: ({focused}) => <TabBarLabel focused={focused} title='Cart'/>,
-        }}
+          tabBarVisible: getTabBarVisible(route) 
+        })}
       />
     </Tab.Navigator>
   );

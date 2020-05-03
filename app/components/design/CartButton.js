@@ -6,9 +6,9 @@ import { LatoTextBold as TextBold } from './Text';
 export default function CustomButton(props) {
 
   return (
-    <View style={{flex: 1, flexDirection: 'row', width:'100%'}}>
+    <View style={[props.containerStyle, {flex: 1, flexDirection: 'row', width:'100%'}]}>
       <TouchableWithoutFeedback onPress={props.onRemove}>
-        <View style={{borderColor: 'transparent', height: props.small ? 30 : 50, backgroundColor: Colors.primary, flex: 0.35, alignItems: 'center', justifyContent: 'center', borderTopLeftRadius: props.allBorder ? 10 : 0, borderBottomLeftRadius: 10}}>
+        <View style={{borderColor: 'transparent', height: props.small ? 30 : 50, backgroundColor: Colors.primary, flex: 0.35, alignItems: 'center', justifyContent: 'center', borderTopLeftRadius: props.bordered ? 5 : 0, borderBottomLeftRadius: 5}}>
         <TextBold style={{color: 'white', fontSize: 16}}>-</TextBold>
         </View>
       </TouchableWithoutFeedback>
@@ -16,7 +16,7 @@ export default function CustomButton(props) {
         <TextBold style={{fontSize: 16}}>{props.quantity}</TextBold>
       </View>
       <TouchableWithoutFeedback onPress={props.onAdd}>
-        <View style={{borderColor: 'transparent', height: props.small ? 30 : 50, backgroundColor: Colors.primary, flex: 0.35, alignItems: 'center', justifyContent: 'center', borderTopRightRadius: props.allBorder ? 10 : 0, borderBottomRightRadius: 10}}>
+        <View style={{borderColor: 'transparent', height: props.small ? 30 : 50, backgroundColor: Colors.primary, flex: 0.35, alignItems: 'center', justifyContent: 'center', borderTopRightRadius: props.bordered ? 5 : 0, borderBottomRightRadius: 5}}>
         <TextBold style={{color: 'white', fontSize: 16}}>+</TextBold>
         </View>
       </TouchableWithoutFeedback>    
