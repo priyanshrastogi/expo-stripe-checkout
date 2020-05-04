@@ -4,7 +4,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const checkoutHtmlPage = require('./helpers/checkoutpagehtml').checkoutHtmlPage;
+const htmlPages = require('./helpers/htmlPages');
 
 const functionName = 'api';
 const basePath = `/.netlify/functions/${functionName}/`;
@@ -56,7 +56,7 @@ router.post('/checkout', async (req, res) => {
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     line_items: order_items,
-    success_url: 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/success',
+    success_url: 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/success' + req.body.platform === 'web' ? '?platform=web' : '',
     cancel_url: 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/cancel',
     client_reference_id: orderId,
     customer_email: 'email@example.com',
@@ -70,12 +70,16 @@ router.post('/checkout', async (req, res) => {
  * To redirect users to Stripe
  */
 router.get('/web/checkout/redirect', async (req, res) => {
-  res.send(checkoutHtmlPage('pk_test_ENcvwuFgRGUey2rsT2GN1A6u', req.query.sessionId));
+  res.send(htmlPages.checkoutHtmlPage('pk_test_ENcvwuFgRGUey2rsT2GN1A6u', req.query.sessionId));
 })
 
 router.get('/payment/success', (req, res) => {
   console.log("Payment Success");
-  res.json({success: true});
+  if(req.query.platform === 'web') {
+    res.send(htmlPages.checkoutSuccessHtmlPage());
+  }
+  else
+    res.json({success: true});
 })
 
 router.get('/payment/cancel', (req, res) => {

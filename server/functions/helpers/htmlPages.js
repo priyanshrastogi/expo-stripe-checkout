@@ -27,6 +27,20 @@ const checkoutHtmlPage = (stripePublicKey, sessionId) => {
   );
 }
 
+const checkoutSuccessHtmlPage = () => {  
+  return (
+  `<html>
+    <body>
+      <h1>Payment Success</h1>
+      <script>
+        window.close();
+      </script>
+    </body>
+  </html>`
+  );
+}
+
 module.exports = {
-  checkoutHtmlPage
+  checkoutHtmlPage,
+  checkoutSuccessHtmlPage
 }
