@@ -56,10 +56,10 @@ router.post('/checkout', async (req, res) => {
   let success_url = '';
   let cancel_url = 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/cancel'
   if(req.body.platform === 'web') {
-    success_url = 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/success';
+    success_url = 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/success?platform=web';
   }
   else {
-    success_url = 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/success?platform=web';
+    success_url = 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/success';
   }
 
   const session = await stripe.checkout.sessions.create({
