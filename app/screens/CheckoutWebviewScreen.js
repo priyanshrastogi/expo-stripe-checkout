@@ -4,17 +4,18 @@ import { ToastAndroid } from 'react-native';
 import { connect } from 'react-redux';
 import { CommonActions, StackActions } from '@react-navigation/native';
 import { clearCart } from '../actions';
+import URLs from '../constants/URLs';
 
 function CheckoutWebViewScreen(props) {
 
   handleChange = (e) => {
     console.log(e.url);
-    if(!e.loading && e.url==='https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/success') {
+    if(!e.loading && e.url===`${URLs.BASE_API}/.netlify/functions/api/payment/success`) {
       props.clearCart();
       props.navigation.dispatch(StackActions.popToTop());
-      props.navigation.dispatch(CommonActions.navigate('OrderPlaced'));
+      props.navigation.dispatch(CommonActions.navigate('OrderPlaced', {orderId: props.route.params.orderId}));
     }
-    else if(!e.loading && e.url==='https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/cancel') {
+    else if(!e.loading && e.url===`${URLs.BASE_API}/.netlify/functions/api/payment/cancel`) {
       props.navigation.goBack();
       ToastAndroid.show('Payment Cancelled.', ToastAndroid.SHORT);
     }
@@ -23,7 +24,7 @@ function CheckoutWebViewScreen(props) {
   return (
     <WebView
       originWhitelist={['*']}
-      source={{ uri: `https://pizzabyexpress.netlify.app/.netlify/functions/api/web/checkout/redirect?sessionId=${props.route.params.sessionId}`}}
+      source={{ uri: `${URLs.BASE_API}/.netlify/functions/api/web/checkout/redirect?sessionId=${props.route.params.sessionId}`}}
       onNavigationStateChange={this.handleChange}
       ref={(ref) => { webview = ref; }}
     />

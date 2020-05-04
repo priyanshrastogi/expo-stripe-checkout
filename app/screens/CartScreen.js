@@ -1,28 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet, FlatList, Platform } from 'react-native';
 import { Button, Text } from '../components/design';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import * as WebBrowser from 'expo-web-browser';
+import { CommonActions } from '@react-navigation/native';
 import CartItem from '../components/CartItem';
+import { clearCart } from '../actions';
+import URLs from '../constants/URLs';
 
 function CartScreen(props) {
-
-  if(Platform.OS === 'web') {
-    WebBrowser.maybeCompleteAuthSession();
-  }
   
+  const [loading, setLoading] = useState(false);
+
   const handleCheckout = async () => { 
-    const res = await axios.post('https://pizzabyexpress.netlify.app/.netlify/functions/api/checkout', {
+    setLoading(true);
+    const res = await axios.post(`${URLs.BASE_API}/.netlify/functions/api/checkout`, {
       items: Object.values(props.cart),
       platform: Platform.OS
     });
+    setLoading(false);
     if(Platform.OS === 'web') {
-      let result = await WebBrowser.openAuthSessionAsync(`https://pizzabyexpress.netlify.app/.netlify/functions/api/web/checkout/redirect?sessionId=${res.data.sessionId}`, 'https://pizzaby-express.netlify.app/');
-      console.log(result);
+      let result = await WebBrowser.openAuthSessionAsync(`${URLs.BASE_API}/.netlify/functions/api/web/checkout/redirect?sessionId=${res.data.sessionId}`);
+      if(result.type === 'dismiss') {
+        props.clearCart();
+        props.navigation.dispatch(CommonActions.navigate('OrderPlaced', {orderId: res.data.orderId}));
+      }
     }
     else 
-      props.navigation.navigate('Checkout', {sessionId: res.data.sessionId});
+      props.navigation.navigate('Checkout', {sessionId: res.data.sessionId, orderId: res.data.orderId});
   }
 
   const totalPayable = () => {
@@ -36,8 +42,8 @@ function CartScreen(props) {
   
   if(Object.keys(props.cart).length === 0) {
     return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <Text>Your Cart is Empty</Text>
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff'}}>
+  <Text style={{fontSize: 16}}>Your Cart is Empty.</Text>
       </View>
     )
   }
@@ -51,7 +57,7 @@ function CartScreen(props) {
         scrollEnabled={false}
       />
       <View style={{margin: 20, marginTop: 50}}>
-        <Button onPress={handleCheckout} title={`Checkout and Pay ${totalPayable()}`} style={{borderRadius: 5}}></Button>
+        <Button onPress={handleCheckout} title={`Checkout and Pay ${totalPayable()}`} style={{borderRadius: 5}} loading={loading} loadingTitle='Redirecting You to Checkout...'></Button>
       </View>
     </ScrollView>
   )
@@ -68,4 +74,4 @@ function mapStateToProps(state) {
   return {cart: state.cart};
 }
 
-export default connect(mapStateToProps)(CartScreen);
+export default connect(mapStateToProps, { clearCart })(CartScreen);

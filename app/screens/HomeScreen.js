@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
-import { Text } from '../components/design';
+import { Text, Button } from '../components/design';
 import { FlatGrid } from 'react-native-super-grid';
 import { connect } from 'react-redux';
 import Product from '../components/Product';

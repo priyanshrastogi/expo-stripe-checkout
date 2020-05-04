@@ -5,11 +5,14 @@ const cors = require('cors');
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const htmlPages = require('./helpers/htmlPages');
+const database = require('./helpers/database');
 
 const functionName = 'api';
 const basePath = `/.netlify/functions/${functionName}/`;
 
 const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+const BASE_URL = 'https://pizzabyexpress.netlify.app';
 
 const app = express(functionName);
 const router = express.Router();
@@ -25,54 +28,63 @@ router.get('/', (req, res) => {
   res.send('Expo Stripe Checkout API')
 });
 
-router.get('/items', (req, res) => {
-
+router.get('/products', async (req, res) => {
+  try {
+    const result = await database.getProducts();
+    res.json(result);
+  } catch(err) {
+    res.status(500).send('Internal Server Error');
+  }
 })
 
 router.post('/checkout', async (req, res) => {
   
-  /* 
-  For the demonstration purpose, I am using req.body.items to create line_items, 
-  but you shouldn't use it in production, mallicious users may change price of items in body before sending to server,
-  rather get items from the database using id received in body.
-  */
-  //console.log(req.body.items);
-  const order_items = [];
-  for(let i=0; i<req.body.items.length; i++) {
-    order_items.push({
-      name: req.body.items[i].name,
-      amount: req.body.items[i].amount*100,
-      currency: 'inr',
-      quantity: req.body.items[i].quantity,
-      images: [req.body.items[i].image]
-    })
+  try {
+
+    /* 
+      For the demonstration purpose, I am using req.body.items to create line_items, 
+      but you shouldn't use it in production, mallicious users may change price of items in body before sending to server,
+      rather get items from the database using id received in body.
+    */
+
+    const order_items = [];
+    let amount = 0;
+    for(let i=0; i<req.body.items.length; i++) {
+      order_items.push({
+        name: req.body.items[i].name,
+        amount: req.body.items[i].amount*100,
+        currency: 'inr',
+        quantity: req.body.items[i].quantity,
+        images: [req.body.items[i].image]
+      });
+      amount = amount + req.body.items[i].amount*req.body.items[i].quantity;
+    }
+
+    const order = await database.createOrder({items: req.body.items, platform: req.body.platform, amount, createdAt: new Date().toISOString(), paymentStatus: 'pending'});
+
+    let success_url = '';
+    let cancel_url = `${BASE_URL}/.netlify/functions/api/payment/cancel`;
+    if(req.body.platform === 'web') {
+      success_url = `${BASE_URL}/.netlify/functions/api/payment/success?platform=web`;
+    }
+    else {
+      success_url = `${BASE_URL}/.netlify/functions/api/payment/success`;
+    }
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: order_items,
+      success_url,
+      cancel_url,
+      client_reference_id: order._id.toString(),
+      customer_email: 'email@example.com',
+    });
+    
+    res.send({orderId: order._id.toString(), sessionId: session.id});
   }
-
-  // Insert a record in orders with payment as pending and with session id,
-  const orderId = 'testingorderid';
-  console.log(order_items);
-  // Generate a session
-
-  let success_url = '';
-  let cancel_url = 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/cancel'
-  if(req.body.platform === 'web') {
-    success_url = 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/success?platform=web';
+  catch(err) {
+    res.status(500).send('Internal Server Error');
   }
-  else {
-    success_url = 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/success';
-  }
-
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    line_items: order_items,
-    success_url,
-    cancel_url,
-    client_reference_id: orderId,
-    customer_email: 'email@example.com',
-  });
-  
-  res.send({orderId, sessionId: session.id});
-
 })
 
 /**
@@ -96,29 +108,32 @@ router.get('/payment/cancel', (req, res) => {
   res.json({success: false});
 })
 
-router.post('/stripe/webhook', (req, res) => {
-  const sig = req.headers['stripe-signature'];
-
-  let event;
-
+router.post('/stripe/webhook', async (req, res) => {
   try {
+    const sig = req.headers['stripe-signature'];
+    let event;
     event = stripe.webhooks.constructEvent(req.body, sig, stripeWebhookSecret);
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object;
+      // Fulfill the purchase...
+      const updatedOrder = await database.updateOrderPaymentStatus(session.client_reference_id, 'paid');
+    }
   } catch (err) {
     console.log(err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
-
-  // Handle the checkout.session.completed event
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
-
-    // Fulfill the purchase...
-    console.log(session);
-  }
-
-  // Return a response to acknowledge receipt of the event
   res.json({received: true});
 });
+
+router.get('/orders/:orderId', async (req, res) => {
+  try {
+    const result = await database.getOrderById(req.params.orderId);
+    console.log(result);
+    res.json(result);
+  } catch(err) {
+    res.status(500).send('Internal Server Error');
+  }
+})
 
 
 app.use(basePath, router);
