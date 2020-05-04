@@ -25,7 +25,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 router.get('/', (req, res) => {
-  res.send('Expo Stripe Checkout API')
+  res.send('Expo Stripe Checkout API\nBuild v1.0.0')
 });
 
 router.get('/products', async (req, res) => {
@@ -95,6 +95,11 @@ router.get('/web/checkout/redirect', async (req, res) => {
 })
 
 router.get('/payment/success', (req, res) => {
+   
+  /**
+   * Don't fulfill the purchase here. Rather use Webhooks to fulfill purchase.
+   */
+  
   console.log("Payment Success");
   if(req.query.platform === 'web') {
     res.send(htmlPages.checkoutSuccessHtmlPage());
