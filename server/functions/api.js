@@ -53,11 +53,20 @@ router.post('/checkout', async (req, res) => {
   console.log(order_items);
   // Generate a session
 
+  let success_url = '';
+  let cancel_url = 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/cancel'
+  if(req.body.platform === 'web') {
+    success_url = 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/success';
+  }
+  else {
+    success_url = 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/success?platform=web';
+  }
+
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     line_items: order_items,
-    success_url: 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/success' + req.body.platform === 'web' ? '?platform=web' : '',
-    cancel_url: 'https://pizzabyexpress.netlify.app/.netlify/functions/api/payment/cancel',
+    success_url,
+    cancel_url,
     client_reference_id: orderId,
     customer_email: 'email@example.com',
   });

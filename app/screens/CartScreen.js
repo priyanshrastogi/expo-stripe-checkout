@@ -7,14 +7,18 @@ import * as WebBrowser from 'expo-web-browser';
 import CartItem from '../components/CartItem';
 
 function CartScreen(props) {
+
+  if(Platform.OS === 'web') {
+    WebBrowser.maybeCompleteAuthSession();
+  }
   
   const handleCheckout = async () => { 
     const res = await axios.post('https://pizzabyexpress.netlify.app/.netlify/functions/api/checkout', {
-      items: Object.values(props.cart)
+      items: Object.values(props.cart),
+      platform: Platform.OS
     });
     if(Platform.OS === 'web') {
-      console.log(res.data.sessionId);
-      let result = await WebBrowser.openBrowserAsync(`https://pizzabyexpress.netlify.app/.netlify/functions/api/web/checkout/redirect?sessionId=${res.data.sessionId}`);
+      let result = await WebBrowser.openAuthSessionAsync(`https://pizzabyexpress.netlify.app/.netlify/functions/api/web/checkout/redirect?sessionId=${res.data.sessionId}`, 'https://pizzaby-express.netlify.app/');
       console.log(result);
     }
     else 
