@@ -12,7 +12,7 @@ const basePath = `/.netlify/functions/${functionName}/`;
 
 const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-const BASE_URL = 'https://pizzabyexpress.netlify.app';
+const BASE_URL = 'https://pizzaby-express.netlify.app';
 
 const app = express(functionName);
 const router = express.Router();
@@ -63,12 +63,14 @@ router.post('/checkout', async (req, res) => {
     const order = await database.createOrder({items: req.body.items, platform: req.body.platform, amount, createdAt: new Date().toISOString(), paymentStatus: 'pending'});
 
     let success_url = '';
-    let cancel_url = `${BASE_URL}/.netlify/functions/api/payment/cancel`;
+    let cancel_url = '';
     if(req.body.platform === 'web') {
       success_url = `${BASE_URL}/.netlify/functions/api/payment/success?platform=web`;
+      cancel_url = `${BASE_URL}/.netlify/functions/api/payment/cancel?platform=web`;
     }
     else {
       success_url = `${BASE_URL}/.netlify/functions/api/payment/success`;
+      cancel_url = `${BASE_URL}/.netlify/functions/api/payment/cancel`;
     }
 
     const session = await stripe.checkout.sessions.create({
