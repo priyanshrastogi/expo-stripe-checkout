@@ -4,6 +4,7 @@
     "slug": "expo-stripe-checkout",
     "privacy": "public",
     "owner": "priyanshrastogi",
+    "githubUrl": "https://github.com/priyanshrastogi/expo-stripe-checkout",
     "platforms": [
       "ios",
       "android",
@@ -11,11 +12,17 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
+    "primaryColor": "#3366FF",
     "icon": "./assets/images/icon.png",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#3366FF"
+    },
+    "androidStatusBar": {
+      "backgroundColor": "#3366FF",
+      "barStyle": "light-content",
+      "translucent": false
     },
     "updates": {
       "fallbackToCacheTimeout": 0

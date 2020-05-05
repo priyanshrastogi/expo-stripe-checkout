@@ -3,7 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import CartScreen from '../screens/CartScreen';
-import ProductDetailsScreen from '../screens/ProductDetailsScreen';
+import InfoScreen from '../screens/InfoScreen';
 import TabBarIcon from '../components/TabBarIcon';
 import TabBarLabel from '../components/TabBarLabel';
 import Colors from '../constants/Colors';
@@ -30,7 +30,6 @@ function HomeStackScreen() {
           headerTitleAlign: 'center'
         }}
       />
-      <HomeStack.Screen name="ProductDetails" component={ProductDetailsScreen} />
       <HomeStack.Screen 
         name="OrderPlaced" 
         component={OrderPlacedScreen} 
@@ -72,6 +71,27 @@ function CartStackScreen() {
   );
 }
 
+const AboutStack = createStackNavigator();
+
+function AboutStackScreen() {
+  return (
+    <AboutStack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: Colors.primary,
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+          fontFamily: 'lato-bold'
+        },
+        headerTitleAlign: 'center'
+      }} 
+    >
+      <AboutStack.Screen name="About" options={{headerLeft: null}} component={InfoScreen}/>
+    </AboutStack.Navigator>
+  );
+}
+
 const Tab = createBottomTabNavigator();
 
 function getTabBarVisible(route) {
@@ -102,6 +122,15 @@ export default function BottomTabNavigator() {
         options={({ route }) => ({
           tabBarIcon: ({focused}) => <TabBarIcon focused={focused} name='shopping-cart'/>,
           tabBarLabel: ({focused}) => <TabBarLabel focused={focused} title='Cart'/>,
+          tabBarVisible: getTabBarVisible(route) 
+        })}
+      />
+      <Tab.Screen 
+        name="Info" 
+        component={AboutStackScreen} 
+        options={({ route }) => ({
+          tabBarIcon: ({focused}) => <TabBarIcon focused={focused} name='info'/>,
+          tabBarLabel: ({focused}) => <TabBarLabel focused={focused} title='About'/>,
           tabBarVisible: getTabBarVisible(route) 
         })}
       />

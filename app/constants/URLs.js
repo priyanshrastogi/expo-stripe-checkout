@@ -1,3 +1,3 @@
 export default {
-  BASE_API: 'https://pizzabyexpress.netlify.app'
+  BASE_API: 'https://pizzaby-express.netlify.app'
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
-import { Text, TextBold, Alert } from '../components/design';
+import { Text, TextBold, Alert, Loader } from '../components/design';
 import axios from 'axios';
 import URLs from '../constants/URLs';
 
@@ -21,7 +21,7 @@ export default function OrderPlacedScreen(props) {
   if(Object.keys(order).length <2) {
     return (
       <View style={[styles.container, {justifyContent: 'center', alignItems: 'center'}]}>
-        <Text>Fetching Your Order</Text>
+        <Loader />
       </View>
     )
   }

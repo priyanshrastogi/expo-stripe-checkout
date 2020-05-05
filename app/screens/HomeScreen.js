@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
-import { Text, Button } from '../components/design';
+import { Loader } from '../components/design';
 import { FlatGrid } from 'react-native-super-grid';
 import { connect } from 'react-redux';
 import Product from '../components/Product';
@@ -13,6 +13,14 @@ function HomeScreen(props) {
       props.getProducts();
     }
   });
+
+  if(props.products.length === 0) {
+    return (
+      <View style={[styles.container, {justifyContent: 'center', alignItems: 'center'}]}>
+        <Loader />
+      </View>
+    )
+  }
 
   return (
     <View style={styles.container}>

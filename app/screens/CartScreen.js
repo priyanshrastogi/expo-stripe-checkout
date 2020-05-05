@@ -4,6 +4,7 @@ import { Button, Text } from '../components/design';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import * as WebBrowser from 'expo-web-browser';
+import { Feather } from '@expo/vector-icons';
 import { CommonActions } from '@react-navigation/native';
 import CartItem from '../components/CartItem';
 import { clearCart } from '../actions';
@@ -43,7 +44,8 @@ function CartScreen(props) {
   if(Object.keys(props.cart).length === 0) {
     return (
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff'}}>
-  <Text style={{fontSize: 16}}>Your Cart is Empty.</Text>
+        <Feather size={36} name='shopping-cart'/>
+        <Text style={{fontSize: 16, marginTop: 20}}>Your Cart is Empty.</Text>
       </View>
     )
   }
