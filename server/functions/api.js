@@ -101,8 +101,6 @@ router.get('/payment/success', (req, res) => {
   /**
    * Don't fulfill the purchase here. Rather use Webhooks to fulfill purchase.
    */
-  
-  console.log("Payment Success");
   if(req.query.platform === 'web') {
     res.send(htmlPages.checkoutSuccessHtmlPage());
   }
@@ -111,8 +109,11 @@ router.get('/payment/success', (req, res) => {
 })
 
 router.get('/payment/cancel', (req, res) => {
-  console.log("Payment Cancelled");
-  res.json({success: false});
+  if(req.query.platform === 'web') {
+    res.send(htmlPages.checkoutCanceledHtmlPage());
+  }
+  else
+    res.json({success: false});
 })
 
 router.post('/stripe/webhook', async (req, res) => {

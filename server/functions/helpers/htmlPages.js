@@ -40,7 +40,21 @@ const checkoutSuccessHtmlPage = () => {
   );
 }
 
+const checkoutCanceledHtmlPage = () => {  
+  return (
+  `<html>
+    <body>
+      <h1>Payment Canceled</h1>
+      <script>
+        window.close();
+      </script>
+    </body>
+  </html>`
+  );
+}
+
 module.exports = {
   checkoutHtmlPage,
-  checkoutSuccessHtmlPage
+  checkoutSuccessHtmlPage,
+  checkoutCanceledHtmlPage
 }
