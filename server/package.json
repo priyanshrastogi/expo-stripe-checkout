@@ -11,7 +11,7 @@
   "dependencies": {
     "aws-serverless-express": "^3.3.6",
     "cors": "^2.8.5",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "mongodb": "^3.2.7",
     "morgan": "^1.9.1",
     "netlify-lambda": "^1.6.3",
